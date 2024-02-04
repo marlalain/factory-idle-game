@@ -1,9 +1,10 @@
-use bevy_egui::egui::{Context, Ui, Window};
+use bevy_egui::egui::{Align, Context, Layout, Ui, Window};
 use serde::{Deserialize, Serialize};
 
 use crate::state::OpenWindows;
 use crate::top_bar_button::TopBarButton;
-use crate::{AppWindow, View};
+use crate::Upgrades::{ChopOnWeekends, FindBetterTrees, SharpenAxe};
+use crate::{AppWindow, GameState, Upgrade, View};
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct WoodProduction;
@@ -13,17 +14,85 @@ impl AppWindow for WoodProduction {
 		"Wood Production"
 	}
 
-	fn show(&mut self, ctx: &Context, open: &mut bool) {
+	fn show(&mut self, ctx: &Context, state: &mut GameState, open: &mut bool) {
 		Window::new(self.name())
 			.open(open)
 			.default_size([300., 300.])
-			.show(ctx, |ui| self.ui(ui));
+			.resizable(false)
+			.collapsible(false)
+			.show(ctx, |ui| self.ui(ui, state));
 	}
 }
 
 impl View for WoodProduction {
-	fn ui(&mut self, ui: &mut Ui) {
-		ui.label("Hello!!");
+	fn ui(&mut self, ui: &mut Ui, state: &mut GameState) {
+		ui.add_space(4.);
+
+		ui.with_layout(Layout::top_down(Align::Center), |ui| {
+			if ui.button("Chop wood").clicked() {
+				state.wood += &state.wood_per_click;
+				state.total_wood += &state.wood_per_click;
+			}
+			ui.add_space(4.);
+
+			ui.label(format!("You have {} units of wood.", state.wood));
+			ui.label(format!(
+				"You are chopping {}w/s (wood per second).",
+				state.wood_per_second
+			));
+
+			ui.add_space(4.);
+
+			let wood_upgrades: Vec<Upgrade> = vec![
+				Upgrade {
+					name: "Sharpen axe",
+					visible: |state| !state.upgrades.contains(&SharpenAxe),
+					enabled: |state| state.wood >= 5.,
+					action: |state| {
+						state.upgrades.insert(SharpenAxe);
+						state.wood_per_click += 1.;
+						state.wood -= 5.;
+					},
+				},
+				Upgrade {
+					name: "Find better trees",
+					visible: |state| {
+						state.upgrades.contains(&SharpenAxe) && !state.upgrades.contains(&FindBetterTrees)
+					},
+					enabled: |state| state.wood >= 5.,
+					action: |state| {
+						state.upgrades.insert(FindBetterTrees);
+						state.wood_per_click += 0.5;
+						state.wood -= 5.;
+					},
+				},
+				Upgrade {
+					name: "Chop wood on the weekends",
+					visible: |state| {
+						state.upgrades.contains(&SharpenAxe)
+							&& state.upgrades.contains(&FindBetterTrees)
+							&& !state.upgrades.contains(&ChopOnWeekends)
+					},
+					enabled: |state| state.wood >= 5.,
+					action: |state| {
+						state.upgrades.insert(ChopOnWeekends);
+						state.wood_per_second += 0.1;
+						state.wood -= 5.;
+					},
+				},
+			];
+
+			for upgrade in wood_upgrades {
+				if (upgrade.visible)(state) {
+					ui.set_enabled((upgrade.enabled)(state));
+					if ui.button(upgrade.name).clicked() {
+						(upgrade.action)(state);
+					}
+				}
+			}
+		});
+
+		ui.add_space(4.);
 	}
 }
 

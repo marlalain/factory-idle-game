@@ -1,11 +1,12 @@
 use bevy_egui::egui::{Context, Ui};
 
 use crate::state::OpenWindows;
+use crate::GameState;
 
 pub mod production;
 
 pub trait View {
-	fn ui(&mut self, ui: &mut Ui);
+	fn ui(&mut self, ui: &mut Ui, state: &mut GameState);
 }
 
 pub trait AppWindow {
@@ -19,7 +20,7 @@ pub trait AppWindow {
 		true
 	}
 
-	fn show(&mut self, ctx: &Context, is_open: &mut bool);
+	fn show(&mut self, ctx: &Context, state: &mut GameState, is_open: &mut bool);
 }
 
 pub fn set_open(open_windows: &mut OpenWindows, key: String, is_open: bool) {
