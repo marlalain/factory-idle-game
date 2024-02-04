@@ -1,6 +1,6 @@
-use egui::Ui;
+use bevy_egui::egui::Ui;
 
-use crate::app::OpenWindows;
+use crate::state::OpenWindows;
 
 pub struct TopBarButton {
 	pub(crate) label: String,

@@ -1,7 +1,7 @@
-use egui::{Context, Ui, Window};
+use bevy_egui::egui::{Context, Ui, Window};
 use serde::{Deserialize, Serialize};
 
-use crate::app::OpenWindows;
+use crate::state::OpenWindows;
 use crate::top_bar_button::TopBarButton;
 use crate::{AppWindow, View};
 
