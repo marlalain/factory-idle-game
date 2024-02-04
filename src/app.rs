@@ -7,20 +7,13 @@ use crate::{windows, AppWindow};
 
 pub type OpenWindows = BTreeSet<String>;
 
-/// We derive Deserialize/Serialize so we can persist app state on shutdown.
+/// We derive Deserialize/Serialize, so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct TemplateApp {
-	// Example stuff:
-	label: String,
-
 	#[serde(skip)]
 	windows: Vec<Box<dyn AppWindow>>,
-
 	open_windows: OpenWindows,
-
-	#[serde(skip)] // This how you opt-out of serialization of a field
-	value: f32,
 }
 
 impl Default for TemplateApp {
@@ -28,8 +21,6 @@ impl Default for TemplateApp {
 		Self {
 			open_windows: BTreeSet::new(),
 			windows: vec![Box::<WoodProduction>::default()],
-			label: "Hello World!".to_owned(),
-			value: 2.7,
 		}
 	}
 }
@@ -75,7 +66,7 @@ impl eframe::App for TemplateApp {
 		});
 	}
 
-	/// Called by the frame work to save state before shutdown.
+	/// Called by the framework to save state before shutdown.
 	fn save(&mut self, storage: &mut dyn eframe::Storage) {
 		eframe::set_value(storage, eframe::APP_KEY, self);
 	}
