@@ -15,6 +15,7 @@ use crate::systems::wood_system::wood_per_second_system;
 pub mod state;
 
 pub mod buttons;
+mod math;
 mod systems;
 pub mod windows;
 

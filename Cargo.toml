@@ -7,6 +7,7 @@ rust-version = "1.72"
 
 
 [dependencies]
+rust_decimal = "1.34.2"
 bevy = "0.12.1"
 bevy_egui = { version = "0.24.0", features = ["immutable_ctx"] }
 rand = "0.8.5"

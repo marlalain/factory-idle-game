@@ -2,6 +2,9 @@ use std::collections::BTreeSet;
 
 use bevy::prelude::Resource;
 use bevy::utils::HashSet;
+use rust_decimal::Decimal;
+
+use crate::math::int;
 
 pub type OpenWindows = BTreeSet<String>;
 
@@ -10,7 +13,7 @@ pub struct UIState {
 	pub open_windows: OpenWindows,
 }
 
-type ValueType = f64;
+type ValueType = Decimal;
 
 #[derive(Resource)]
 pub struct GameState {
@@ -24,10 +27,10 @@ pub struct GameState {
 impl Default for GameState {
 	fn default() -> Self {
 		Self {
-			total_wood: 0.,
-			wood: 0.,
-			wood_per_click: 1.,
-			wood_per_second: 0.,
+			total_wood: int(0),
+			wood: int(0),
+			wood_per_click: int(1),
+			wood_per_second: int(0),
 			upgrades: HashSet::<Upgrades>::default(),
 		}
 	}
